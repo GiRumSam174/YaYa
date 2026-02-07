@@ -1,16 +1,15 @@
-const CACHE_NAME = 'yaya-game-v3'; // Incremented to v3
+const CACHE_NAME = 'yaya-game-v4';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
   './icon-192.png',
-  './icon-516.png'
+  './icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('Opened cache');
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );
