@@ -74,6 +74,7 @@
             gap: 15px;
             min-height: 0;
             padding-top: 25px; 
+            padding-bottom: 5px;
         }
 
         .piles-row {
@@ -82,6 +83,7 @@
             justify-content: center;
             align-items: center;
             gap: 30px;
+            flex-shrink: 1; /* Allow cards to shrink slightly if screen is tiny */
         }
 
         #game-log {
@@ -100,9 +102,35 @@
             box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
             -webkit-overflow-scrolling: touch;
             margin-top: 5px;
+            flex-shrink: 0; /* KEY: Prevent shrinking */
         }
         
         .log-entry { margin-bottom: 3px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 2px; }
+
+        /* PLAY AGAIN BUTTON */
+        #play-again-btn {
+            margin-top: 10px;
+            padding: 10px 30px;
+            font-size: 1.1rem;
+            background: #ffcc00;
+            color: #333;
+            border: 2px solid white;
+            border-radius: 25px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            display: none;
+            z-index: 50;
+            text-transform: uppercase;
+            flex-shrink: 0;
+            animation: popIn 0.3s ease-out;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            80% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+        #play-again-btn:active { transform: scale(0.95); }
 
         .player-area {
             width: 100%;
@@ -246,7 +274,9 @@
                 </div>
                 <div id="discard-pile-container"></div>
             </div>
+            
             <div id="game-log"></div>
+            <button id="play-again-btn" onclick="initGame()">Play Again</button>
         </div>
 
         <div class="player-area" id="player-hand"></div>
@@ -283,8 +313,18 @@
     const turnEl = document.getElementById('turn-indicator');
     const unoMsg = document.getElementById('uno-msg');
     const discardContainer = document.getElementById('discard-pile-container');
+    const playAgainBtn = document.getElementById('play-again-btn');
 
     function initGame() {
+        // RESET
+        deck = []; discardPile = []; playerHand = []; cpuHand = [];
+        currentColor = ''; currentSymbol = '';
+        isPlayerTurn = true; gameActive = true; hasDrawnThisTurn = false;
+        
+        logEl.innerHTML = '';
+        playAgainBtn.style.display = 'none';
+        turnEl.style.color = 'white';
+        
         createDeck();
         shuffleDeck();
         dealCards();
@@ -488,14 +528,18 @@
         if (cpuHand.length === 1) showUno('CPU');
 
         if (playerHand.length === 0) {
-            log("YOU WIN!");
-            alert("YOU WIN!");
-            gameActive = false;
+            endGame("Player wins!!");
         } else if (cpuHand.length === 0) {
-            log("CPU WINS!");
-            alert("CPU WINS!");
-            gameActive = false;
+            endGame("CPU won!!");
         }
+    }
+
+    function endGame(msg) {
+        gameActive = false;
+        log(msg);
+        turnEl.innerText = msg;
+        turnEl.style.color = '#ffcc00'; 
+        playAgainBtn.style.display = 'block';
     }
 
     function showUno(who) {
@@ -594,6 +638,8 @@
     }
 
     function updateTurnIndicator() {
+        if (!gameActive) return;
+        
         if (!hasDrawnThisTurn) turnEl.innerText = isPlayerTurn ? "Your Turn" : "CPU Turn";
         turnEl.style.color = isPlayerTurn ? "#44ff44" : "#ff4444";
         

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'yaya-game-v1';
+const CACHE_NAME = 'yaya-game-v3'; // Incremented to v3
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -7,7 +7,6 @@ const ASSETS_TO_CACHE = [
   './icon-516.png'
 ];
 
-// Install Event: Cache files
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -15,9 +14,9 @@ self.addEventListener('install', (event) => {
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );
+  self.skipWaiting();
 });
 
-// Fetch Event: Serve from cache if available, otherwise fetch from network
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
@@ -26,7 +25,6 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Activate Event: Clean up old caches
 self.addEventListener('activate', (event) => {
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
@@ -40,4 +38,5 @@ self.addEventListener('activate', (event) => {
       );
     })
   );
+  return self.clients.claim();
 });
