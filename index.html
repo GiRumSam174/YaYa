@@ -62,19 +62,26 @@
             justify-content: center;
             align-items: center;
             margin-bottom: 5px;
+            flex-shrink: 0; 
         }
 
         .middle-section {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
+            
             justify-content: center;
             align-items: center;
+            
             width: 100%;
             gap: 15px;
             min-height: 0;
+            
             padding-top: 25px; 
             padding-bottom: 5px;
+            
+            position: relative; 
+            margin-top: -5px;
         }
 
         .piles-row {
@@ -107,40 +114,56 @@
         
         .log-entry { margin-bottom: 3px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 2px; }
 
-        /* PLAY AGAIN BUTTON */
-        #play-again-btn {
-            margin-top: 10px;
-            padding: 10px 30px;
-            font-size: 1.1rem;
-            background: #ffcc00;
-            color: #333;
+        /* BUTTONS */
+        .game-btn {
+            pointer-events: auto;
+            padding: 8px 20px;
+            font-size: 1rem;
             border: 2px solid white;
-            border-radius: 25px;
+            border-radius: 20px;
             font-weight: 900;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            
-            visibility: hidden; 
-            pointer-events: none; 
-            
-            z-index: 50;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
             text-transform: uppercase;
-            flex-shrink: 0;
-            transition: opacity 0.3s;
+            transition: transform 0.1s;
         }
-        
+        .game-btn:active { transform: translateX(-50%) scale(0.95); }
+
+        /* PLAY AGAIN: Positioned at -68px */
+        #play-again-btn {
+            position: absolute;
+            bottom: -68px; 
+            left: 50%;
+            transform: translateX(-50%);
+            
+            background: #ffcc00; color: #333;
+            display: none; 
+            padding: 10px 30px; font-size: 1.1rem;
+            z-index: 30;
+        }
         #play-again-btn.visible {
-            visibility: visible;
-            pointer-events: auto;
+            display: block;
             animation: popIn 0.3s ease-out;
         }
 
-        @keyframes popIn {
-            0% { transform: scale(0); opacity: 0; }
-            80% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(1); }
+        /* INSTRUCTIONS: Positioned at 7px */
+        #instructions-btn {
+            position: absolute;
+            bottom: 7px; 
+            left: 50%;
+            transform: translateX(-50%);
+
+            background: #0066ff; color: white;
+            font-size: 0.9rem;
+            padding: 6px 15px;
+            z-index: 25;
         }
-        #play-again-btn:active { transform: scale(0.95); }
+
+        @keyframes popIn {
+            0% { transform: translateX(-50%) scale(0); opacity: 0; }
+            80% { transform: translateX(-50%) scale(1.1); opacity: 1; }
+            100% { transform: translateX(-50%) scale(1); }
+        }
 
         .player-area {
             width: 100%;
@@ -148,12 +171,17 @@
             display: flex;
             align-items: center;
             padding: 10px 0;
+            
+            /* Margin set to 16px */
+            margin-top: 16px;
+            
             overflow-x: auto;
             justify-content: flex-start;
             gap: -10px;
             padding-left: 20px;
             padding-right: 20px;
             box-sizing: border-box;
+            flex-shrink: 0;
         }
         .player-area::-webkit-scrollbar { display: none; }
 
@@ -249,14 +277,8 @@
             margin-bottom: 5px; text-transform: uppercase;
         }
 
-        .uno-shout {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            color: yellow; font-size: 5rem; font-weight: 900;
-            text-shadow: 4px 4px 0px red; display: none; z-index: 100;
-        }
-
-        #color-picker {
+        /* MODAL & PICKER */
+        .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); display: none;
             justify-content: center; align-items: center; z-index: 200;
@@ -264,6 +286,38 @@
         .picker-content { background: white; padding: 20px; border-radius: 15px; text-align: center; }
         .color-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
         .color-btn { width: 60px; height: 60px; border-radius: 10px; border: none; }
+
+        /* INSTRUCTIONS SPECIFIC */
+        #instructions-modal .modal-content {
+            background: #fff;
+            width: 90%; max-width: 400px;
+            max-height: 80%;
+            border-radius: 15px;
+            padding: 20px;
+            color: #333;
+            overflow-y: auto;
+            text-align: left;
+            position: relative;
+        }
+        .close-btn {
+            position: absolute; top: 10px; right: 15px;
+            font-size: 1.5rem; font-weight: bold;
+            cursor: pointer; color: #666;
+        }
+        .stat-box {
+            background: #eee; padding: 10px;
+            border-radius: 8px; margin-bottom: 15px;
+            font-family: monospace; font-size: 1rem;
+            text-align: center; border: 1px solid #ccc;
+        }
+        .card-row {
+            display: flex; align-items: center; gap: 15px;
+            margin-bottom: 10px; border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .sample-card-wrapper { transform: scale(0.5); transform-origin: left center; width: 40px; height: 60px; }
+        .card-desc { font-size: 0.9rem; line-height: 1.3; }
+        .card-desc strong { color: #2c7744; }
 
         @media (max-width: 600px) {
             :root { --card-width: 65px; --card-height: 96px; }
@@ -286,14 +340,15 @@
             </div>
             
             <div id="game-log"></div>
-            <button id="play-again-btn" onclick="initGame()">Play Again</button>
+
+            <button id="instructions-btn" class="game-btn" onclick="openInstructions()">How to Play</button>
+            <button id="play-again-btn" class="game-btn" onclick="initGame()">Play Again</button>
         </div>
 
         <div class="player-area" id="player-hand"></div>
-        <div id="uno-msg" class="uno-shout">YaYa!</div>
-    </div>
+        </div>
 
-    <div id="color-picker">
+    <div id="color-picker" class="modal-overlay">
         <div class="picker-content">
             <h2 style="color:black; margin:0;">Pick Color</h2>
             <div class="color-grid">
@@ -302,6 +357,25 @@
                 <button class="color-btn" style="background:#55aa55" onclick="resolveWild('Green')"></button>
                 <button class="color-btn" style="background:#ffcc00" onclick="resolveWild('Yellow')"></button>
             </div>
+        </div>
+    </div>
+
+    <div id="instructions-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="close-btn" onclick="closeInstructions()">×</div>
+            <h2 style="margin-top:0; text-align:center;">YaYa v1.16</h2>
+            
+            <div class="stat-box" id="stat-display">
+                Loading Stats...
+            </div>
+            
+            <p style="font-size:0.9rem; margin-bottom:15px;">
+                <strong>Objective:</strong> Be the first to empty your hand. Match the top card by color or symbol.
+            </p>
+
+            <h3 style="border-bottom:2px solid #2c7744; padding-bottom:5px;">Special Cards</h3>
+            
+            <div id="legend-container"></div>
         </div>
     </div>
 
@@ -317,21 +391,29 @@
     const COLORS = ['Red', 'Blue', 'Green', 'Yellow'];
     let deck = [], discardPile = [], playerHand = [], cpuHand = [];
     let currentColor = '', currentSymbol = '', isPlayerTurn = true, gameActive = true, hasDrawnThisTurn = false; 
+    let firstCardPlayed = false;
+
+    // Stats
+    let stats = { wins: 0, losses: 0 };
 
     const logEl = document.getElementById('game-log');
     const turnEl = document.getElementById('turn-indicator');
-    const unoMsg = document.getElementById('uno-msg');
     const discardContainer = document.getElementById('discard-pile-container');
     const playAgainBtn = document.getElementById('play-again-btn');
+    const instructionsBtn = document.getElementById('instructions-btn');
 
     function initGame() {
         deck = []; discardPile = []; playerHand = []; cpuHand = [];
         currentColor = ''; currentSymbol = '';
         isPlayerTurn = true; gameActive = true; hasDrawnThisTurn = false;
+        firstCardPlayed = false;
+
+        loadStats();
         
         logEl.innerHTML = '';
         
         playAgainBtn.classList.remove('visible');
+        instructionsBtn.style.display = 'block';
         
         turnEl.style.color = 'white';
         
@@ -350,6 +432,62 @@
         renderGame();
         log("Welcome to YaYa!");
         updateTurnIndicator();
+
+        buildLegend();
+    }
+
+    function loadStats() {
+        const storedWins = localStorage.getItem('yaya_wins');
+        const storedLosses = localStorage.getItem('yaya_losses');
+        if (storedWins) stats.wins = parseInt(storedWins);
+        if (storedLosses) stats.losses = parseInt(storedLosses);
+    }
+
+    function saveStats() {
+        localStorage.setItem('yaya_wins', stats.wins);
+        localStorage.setItem('yaya_losses', stats.losses);
+    }
+
+    function openInstructions() {
+        document.getElementById('stat-display').innerText = 
+            `Stats: Wins/Losses = ${stats.wins}/${stats.losses}`;
+        
+        document.getElementById('instructions-modal').style.display = 'flex';
+    }
+
+    function closeInstructions() {
+        document.getElementById('instructions-modal').style.display = 'none';
+    }
+
+    function buildLegend() {
+        const container = document.getElementById('legend-container');
+        if (container.innerHTML !== '') return; // Already built
+
+        const definitions = [
+            { c: createCard('Blue', 'Skip', 'action'), text: "<strong>Skip:</strong> Next player loses their turn. In 2-player, you play again immediately." },
+            { c: createCard('Green', 'Reverse', 'action'), text: "<strong>Reverse:</strong> Switches direction. In 2-player, acts exactly like a Skip (you play again)." },
+            { c: createCard('Red', 'Draw2', 'action'), text: "<strong>Draw 2:</strong> Next player draws 2 cards and loses their turn." },
+            { c: createCard('Wild', 'Wild', 'wild'), text: "<strong>Wild:</strong> Change the active color to one of your choice. Playable on any card." },
+            { c: createCard('Wild', 'Draw4', 'wild4'), text: "<strong>Wild Draw 4:</strong> Change color, next player draws 4 cards and loses turn. Playable on any card." },
+             { c: createCard('Yellow', '5', 'number'), text: "<strong>Number Cards (1-9):</strong> Standard cards. Match by color or number to play." }
+        ];
+
+        definitions.forEach(item => {
+            const row = document.createElement('div');
+            row.className = 'card-row';
+            
+            const wrapper = document.createElement('div');
+            wrapper.className = 'sample-card-wrapper';
+            wrapper.appendChild(renderCardHTML(item.c, false));
+            
+            const desc = document.createElement('div');
+            desc.className = 'card-desc';
+            desc.innerHTML = item.text;
+
+            row.appendChild(wrapper);
+            row.appendChild(desc);
+            container.appendChild(row);
+        });
     }
 
     function createDeck() {
@@ -440,7 +578,7 @@
         if(card.value === 'Skip') { displayVal = '⊘'; isSymbol=true; }
         if(card.value === 'Reverse') { displayVal = '⇄'; isSymbol=true; }
         if(card.value === 'Wild') { displayVal = '?'; isSymbol=true; }
-
+        
         const innerClass = isSymbol ? 'card-symbol symbol-text' : 'card-symbol';
 
         el.innerHTML = `
@@ -534,37 +672,44 @@
     }
 
     function checkWinCondition() {
-        if (playerHand.length === 1) showUno('Player');
-        if (cpuHand.length === 1) showUno('CPU');
-
+        // "Shout" functionality removed here.
         if (playerHand.length === 0) {
-            endGame("Player wins!!");
+            endGame(true);
         } else if (cpuHand.length === 0) {
-            endGame("CPU won!!");
+            endGame(false);
         }
     }
 
-    function endGame(msg) {
+    function endGame(playerWon) {
         gameActive = false;
-        log(msg);
-        turnEl.innerText = msg;
+        
+        if (playerWon) {
+            stats.wins++;
+            log("Player wins!!");
+            turnEl.innerText = "Player wins!!";
+        } else {
+            stats.losses++;
+            log("CPU won!!");
+            turnEl.innerText = "CPU won!!";
+        }
+        saveStats();
+
         turnEl.style.color = '#ffcc00'; 
         
         playAgainBtn.classList.add('visible');
     }
 
-    function showUno(who) {
-        unoMsg.style.display = 'block';
-        unoMsg.innerText = `${who} YaYa!`;
-        setTimeout(() => unoMsg.style.display = 'none', 2000);
-    }
-
     function humanPlayCard(index) {
         if (!isPlayerTurn || !gameActive) return;
+        
+        if (!firstCardPlayed) {
+            firstCardPlayed = true;
+            instructionsBtn.style.display = 'none';
+        }
+
         const card = playerHand[index];
         if (isPlayable(card)) {
             playerHand.splice(index, 1);
-            // FIXED: Update pile BEFORE render so visual logic sees the new state
             playCardToPile(card);
             renderGame();
         } else log("Can't play that.");
