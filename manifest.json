@@ -3,8 +3,8 @@
   "short_name": "YaYa",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#1a1a1a",
-  "theme_color": "#2c7744",
+  "background_color": "#1b5e20",
+  "theme_color": "#1b5e20",
   "orientation": "portrait",
   "icons": [
     {
