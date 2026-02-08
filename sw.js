@@ -1,4 +1,4 @@
-const CACHE_NAME = 'yaya-game-v16';
+const CACHE_NAME = 'yaya-game-v17';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

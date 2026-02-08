@@ -146,10 +146,10 @@
             animation: popIn 0.3s ease-out;
         }
 
-        /* INSTRUCTIONS: Positioned at 7px */
+        /* INSTRUCTIONS: NOW also at -68px (Same as Play Again) */
         #instructions-btn {
             position: absolute;
-            bottom: 7px; 
+            bottom: -68px; 
             left: 50%;
             transform: translateX(-50%);
 
@@ -346,7 +346,7 @@
         </div>
 
         <div class="player-area" id="player-hand"></div>
-        </div>
+    </div>
 
     <div id="color-picker" class="modal-overlay">
         <div class="picker-content">
@@ -363,7 +363,7 @@
     <div id="instructions-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="close-btn" onclick="closeInstructions()">×</div>
-            <h2 style="margin-top:0; text-align:center;">YaYa v1.16</h2>
+            <h2 style="margin-top:0; text-align:center;">YaYa    v1.17</h2>
             
             <div class="stat-box" id="stat-display">
                 Loading Stats...
@@ -672,7 +672,6 @@
     }
 
     function checkWinCondition() {
-        // "Shout" functionality removed here.
         if (playerHand.length === 0) {
             endGame(true);
         } else if (cpuHand.length === 0) {
